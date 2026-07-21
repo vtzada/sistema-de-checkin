@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Getter
@@ -27,6 +28,9 @@ public class Patrocinador {
     @ManyToOne
     @JoinColumn(name = "pacote_id")
     private Pacote pacote;
+
+    @OneToMany(mappedBy = "patrocinador")
+    private List<Convidado> convidados;
 
     private boolean ativo;
 

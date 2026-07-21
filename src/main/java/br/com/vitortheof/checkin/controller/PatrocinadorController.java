@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/evento/patrocinador")
 @RequiredArgsConstructor
@@ -24,6 +26,12 @@ public class PatrocinadorController {
     @GetMapping("/{id}")
     public ResponseEntity<PatrocinadorResponse> findById(@PathVariable Long id) {
         PatrocinadorResponse response = patrocinadorService.findById(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public  ResponseEntity<List<PatrocinadorResponse>> findAll() {
+        List<PatrocinadorResponse> response = patrocinadorService.findAll();
         return ResponseEntity.ok(response);
     }
 

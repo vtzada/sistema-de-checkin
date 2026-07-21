@@ -12,6 +12,8 @@ import br.com.vitortheof.checkin.repository.PatrocinadorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class PatrocinadorService {
@@ -43,5 +45,12 @@ public class PatrocinadorService {
                 .orElseThrow(() -> new RuntimeException("Patrocinador não encontrado;"));
 
         return PatrocinadorMapper.toPatrocinadorResponse(patrocinador);
+    }
+
+    public List<PatrocinadorResponse> findAll() {
+        List<Patrocinador> patrocinadores = patrocinadorRepository.findAll();
+        return patrocinadores.stream()
+                .map(PatrocinadorMapper::toPatrocinadorResponse)
+                .toList();
     }
 }

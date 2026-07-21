@@ -24,5 +24,4 @@ public class EventoMapper {
                 .ativo(request.ativo())
                 .build();
     }
-
 }

@@ -1,6 +1,17 @@
 spring:
   application:
     name: checkin
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: drakecrafts@gmail.com
+    password: dgpr mkhd okgw ktnf
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   datasource:
     url: jdbc:postgresql://localhost:5432/checkin
     username: postgres

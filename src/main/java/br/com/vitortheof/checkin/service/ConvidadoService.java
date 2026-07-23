@@ -5,8 +5,11 @@ import br.com.vitortheof.checkin.dto.response.ConvidadoResponse;
 import br.com.vitortheof.checkin.exception.BusinessException;
 import br.com.vitortheof.checkin.exception.ResourceAlreadyExistsException;
 import br.com.vitortheof.checkin.exception.ResourceNotFoundException;
+import br.com.vitortheof.checkin.infra.EmailService;
+import br.com.vitortheof.checkin.infra.QrCodeService;
 import br.com.vitortheof.checkin.mapper.ConvidadoMapper;
 import br.com.vitortheof.checkin.model.Convidado;
+import br.com.vitortheof.checkin.model.Ingresso;
 import br.com.vitortheof.checkin.model.Pacote;
 import br.com.vitortheof.checkin.model.Patrocinador;
 import br.com.vitortheof.checkin.model.enums.StatusConfirmacao;
@@ -14,12 +17,14 @@ import br.com.vitortheof.checkin.model.enums.TipoConvidado;
 import br.com.vitortheof.checkin.repository.ConvidadoRepository;
 import br.com.vitortheof.checkin.repository.PatrocinadorRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ConvidadoService {
@@ -27,6 +32,8 @@ public class ConvidadoService {
     private final ConvidadoRepository convidadoRepository;
     private final PatrocinadorRepository patrocinadorRepository;
     private final IngressoService ingressoService;
+    private final EmailService emailService;
+    private final QrCodeService qrCodeService;
 
 
     @Transactional
@@ -54,6 +61,8 @@ public class ConvidadoService {
 
         Convidado savedConvidado = convidadoRepository.save(convidado);
 
+        emailService.enviarEmailConfirmacao(savedConvidado.getEmail(), token);
+
         return ConvidadoMapper.toConvidadoResponse(savedConvidado);
     }
 
@@ -71,7 +80,15 @@ public class ConvidadoService {
 
         convidadoRepository.save(convidado);
 
-        ingressoService.gerarIngresso(convidado);
+        Ingresso ingresso = ingressoService.gerarIngresso(convidado);
+
+        byte[] qrCodeBytes = qrCodeService.gerarQrCodeBytes(ingresso.getCodigoQR().toString());
+
+        try {
+            emailService.enviarEmailIngresso(convidado, ingresso, qrCodeBytes);
+        } catch (BusinessException e) {
+            log.error("Falha ao enviar e-mail de ingresso para o convidado id={}, email={}", convidado.getId(), convidado.getEmail(), e);
+        }
     }
 
     public ConvidadoResponse findById(Long id) {

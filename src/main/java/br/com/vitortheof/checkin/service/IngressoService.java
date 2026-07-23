@@ -22,15 +22,13 @@ import java.util.UUID;
 public class IngressoService {
 
     private final IngressoRepository ingressoRepository;
-    private final ConvidadoRepository convidadoRepository;
 
     @Transactional
-    public void gerarIngresso(Convidado convidado) {
+    public Ingresso gerarIngresso(Convidado convidado) {
 
         Ingresso ingresso = Ingresso.builder().codigoQR(UUID.randomUUID()).status(StatusIngresso.VALIDO).convidado(convidado).build();
 
-        ingressoRepository.save(ingresso);
-
+        return ingressoRepository.save(ingresso);
     }
 
     @Transactional

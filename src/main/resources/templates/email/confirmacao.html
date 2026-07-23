@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); text-align: center; }
+        h2 { color: #333333; margin-top: 0; }
+        p { color: #666666; line-height: 1.6; }
+        .button { display: inline-block; background-color: #4CAF50; color: #ffffff !important; text-decoration: none; padding: 14px 32px; margin: 24px 0; border-radius: 5px; font-weight: bold; font-size: 16px; }
+        .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #eeeeee; font-size: 12px; color: #999999; }
+        .link-fallback { word-break: break-all; font-size: 12px; color: #4CAF50; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Olá, bem-vindo.</h2>
+    <p>Para confirmar seu cadastro, clique no botão abaixo:</p>
+
+    <a th:href="${linkConfirmacao}" class="button">Confirmar E-mail</a>
+
+    <p>Se o botão não funcionar, copie e cole o link abaixo no seu navegador:</p>
+    <p class="link-fallback" th:text="${linkConfirmacao}">link</p>
+
+    <div class="footer">
+        <p>Se você não solicitou este cadastro, ignore este e-mail.</p>
+    </div>
+</div>
+</body>
+</html>

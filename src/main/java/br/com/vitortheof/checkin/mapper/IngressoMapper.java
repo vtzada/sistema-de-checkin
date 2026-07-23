@@ -1,6 +1,6 @@
 package br.com.vitortheof.checkin.mapper;
 
-import br.com.vitortheof.checkin.dto.request.IngressoResponse;
+import br.com.vitortheof.checkin.dto.response.IngressoResponse;
 import br.com.vitortheof.checkin.model.Ingresso;
 import org.springframework.stereotype.Component;
 

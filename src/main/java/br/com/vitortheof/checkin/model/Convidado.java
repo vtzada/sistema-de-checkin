@@ -1,5 +1,6 @@
 package br.com.vitortheof.checkin.model;
 
+import br.com.vitortheof.checkin.model.enums.StatusConfirmacao;
 import br.com.vitortheof.checkin.model.enums.TipoConvidado;
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,14 +18,22 @@ public class Convidado {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String nomeCompleto;
 
+    @Column(nullable = false)
     private String email;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private TipoConvidado tipoConvidado;
 
     @ManyToOne
-    @JoinColumn(name = "patrocinador_id")
+    @JoinColumn(name = "patrocinador_id", nullable = false)
     private Patrocinador patrocinador;
+
+    private StatusConfirmacao statusConfirmacao;
+
+    private String tokenConfirmacao;
 
 }

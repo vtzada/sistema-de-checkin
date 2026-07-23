@@ -3,6 +3,7 @@ package br.com.vitortheof.checkin.controller;
 import br.com.vitortheof.checkin.dto.request.PatrocinadorRequest;
 import br.com.vitortheof.checkin.dto.response.PatrocinadorResponse;
 import br.com.vitortheof.checkin.service.PatrocinadorService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class PatrocinadorController {
     private final PatrocinadorService patrocinadorService;
 
     @PostMapping
-    public ResponseEntity<PatrocinadorResponse> createPatrocinador(@RequestBody PatrocinadorRequest request) {
+    public ResponseEntity<PatrocinadorResponse> createPatrocinador(@Valid  @RequestBody PatrocinadorRequest request) {
         PatrocinadorResponse response = patrocinadorService.createPatrocinador(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

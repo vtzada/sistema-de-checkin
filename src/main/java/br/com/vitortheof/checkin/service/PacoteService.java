@@ -2,6 +2,7 @@ package br.com.vitortheof.checkin.service;
 
 import br.com.vitortheof.checkin.dto.request.PacoteRequest;
 import br.com.vitortheof.checkin.dto.response.PacoteResponse;
+import br.com.vitortheof.checkin.exception.ResourceNotFoundException;
 import br.com.vitortheof.checkin.mapper.PacoteMapper;
 import br.com.vitortheof.checkin.model.Pacote;
 import br.com.vitortheof.checkin.repository.PacoteRepository;
@@ -9,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +19,7 @@ public class PacoteService {
 
     public PacoteResponse findById(Long id) {
         Pacote pacote = pacoteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pacote não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Pacote não encontrado"));
         return PacoteMapper.toPacoteResponse(pacote);
     }
 

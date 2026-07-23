@@ -2,6 +2,7 @@ package br.com.vitortheof.checkin.service;
 
 import br.com.vitortheof.checkin.dto.request.PatrocinadorRequest;
 import br.com.vitortheof.checkin.dto.response.PatrocinadorResponse;
+import br.com.vitortheof.checkin.exception.ResourceNotFoundException;
 import br.com.vitortheof.checkin.mapper.PatrocinadorMapper;
 import br.com.vitortheof.checkin.model.Evento;
 import br.com.vitortheof.checkin.model.Pacote;
@@ -24,10 +25,10 @@ public class PatrocinadorService {
 
     public PatrocinadorResponse createPatrocinador(PatrocinadorRequest request) {
         Evento evento = eventoRepository.findById(request.eventoId())
-                .orElseThrow(() -> new RuntimeException("Evento não encontrado!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Evento não encontrado!"));
 
         Pacote pacote = pacoteRepository.findById(request.pacoteId())
-                .orElseThrow(() -> new RuntimeException("Pacote não encontrado!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Pacote não encontrado!"));
 
         Patrocinador patrocinador = Patrocinador.builder()
                 .nome(request.nome())
@@ -42,7 +43,7 @@ public class PatrocinadorService {
 
     public PatrocinadorResponse findById(Long id) {
         Patrocinador patrocinador = patrocinadorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Patrocinador não encontrado;"));
+                .orElseThrow(() -> new ResourceNotFoundException("Patrocinador não encontrado;"));
 
         return PatrocinadorMapper.toPatrocinadorResponse(patrocinador);
     }

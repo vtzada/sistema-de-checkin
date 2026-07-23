@@ -1,7 +1,14 @@
 package br.com.vitortheof.checkin.dto.request;
 
-import br.com.vitortheof.checkin.model.Evento;
-import br.com.vitortheof.checkin.model.Pacote;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-public record PatrocinadorRequest(String nome, Long eventoId, Long pacoteId, boolean ativo) {
+public record PatrocinadorRequest(
+        @NotBlank(message = "Nome é obrigatório")
+        String nome,
+        @NotNull(message = "Evento é obrigatório")
+        Long eventoId,
+        @NotNull(message = "Pacote é obrigatório")
+        Long pacoteId,
+        boolean ativo) {
 }

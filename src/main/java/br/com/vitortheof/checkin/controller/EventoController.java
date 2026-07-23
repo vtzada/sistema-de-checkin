@@ -3,6 +3,7 @@ package br.com.vitortheof.checkin.controller;
 import br.com.vitortheof.checkin.dto.request.EventoRequest;
 import br.com.vitortheof.checkin.dto.response.EventoResponse;
 import br.com.vitortheof.checkin.service.EventoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class EventoController {
     private final EventoService eventoService;
 
     @PostMapping
-    public ResponseEntity<EventoResponse> createEvento(@RequestBody EventoRequest request) {
+    public ResponseEntity<EventoResponse> createEvento(@Valid  @RequestBody EventoRequest request) {
         EventoResponse response = eventoService.createEvento(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

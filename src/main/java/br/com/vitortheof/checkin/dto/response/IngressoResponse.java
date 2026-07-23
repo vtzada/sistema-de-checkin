@@ -1,4 +1,4 @@
-package br.com.vitortheof.checkin.dto.request;
+package br.com.vitortheof.checkin.dto.response;
 
 import br.com.vitortheof.checkin.model.enums.StatusIngresso;
 import br.com.vitortheof.checkin.model.enums.TipoConvidado;

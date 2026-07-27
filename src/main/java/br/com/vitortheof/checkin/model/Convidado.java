@@ -32,6 +32,7 @@ public class Convidado {
     @JoinColumn(name = "patrocinador_id", nullable = false)
     private Patrocinador patrocinador;
 
+    @Enumerated(EnumType.STRING)
     private StatusConfirmacao statusConfirmacao;
 
     private String tokenConfirmacao;

@@ -35,6 +35,10 @@ public class Evento {
     @OneToMany(mappedBy = "evento")
     private List<Patrocinador> patrocinadores;
 
+    @ManyToOne
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario produtor;
+
     @CreationTimestamp
     @Column(name = "criado_em")
     private Instant criadoEm;

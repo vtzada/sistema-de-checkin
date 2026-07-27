@@ -4,22 +4,30 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: drakecrafts@gmail.com
-    password: dgpr mkhd okgw ktnf
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+  profiles:
+    active: local
   datasource:
     url: jdbc:postgresql://localhost:5432/checkin
     username: postgres
-    password: 123
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+api:
+  security:
+    token:
+      secret: "${JWT_SECRET:my-secret-key}"

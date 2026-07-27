@@ -26,6 +26,7 @@ public class Ingresso {
     @Column(name = "codigo_qr", unique = true, nullable = false)
     private UUID codigoQR;
 
+    @Enumerated(EnumType.STRING)
     private StatusIngresso status;
 
     private LocalDateTime dataHoraEntrada;

@@ -5,6 +5,7 @@ import br.com.vitortheof.checkin.dto.response.EventoResponse;
 import br.com.vitortheof.checkin.exception.ResourceNotFoundException;
 import br.com.vitortheof.checkin.mapper.EventoMapper;
 import br.com.vitortheof.checkin.model.Evento;
+import br.com.vitortheof.checkin.model.Usuario;
 import br.com.vitortheof.checkin.repository.EventoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,10 +31,30 @@ public class EventoService {
                 .toList();
     }
 
-    public EventoResponse createEvento(EventoRequest request) {
+    public EventoResponse createEvento(EventoRequest request, Usuario produtor) {
         Evento evento = EventoMapper.toEvento(request);
+        evento.setProdutor(produtor);
+        evento.setAtivo(true);
         Evento savedEvent = eventoRepository.save(evento);
 
         return EventoMapper.toEventoResponse(savedEvent);
     }
+
+    public EventoResponse updateEvento(Long id, EventoRequest request) {
+        Evento eventoExistente = eventoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Evento não encontrado."));
+
+        eventoExistente.setNome(request.nome());
+        eventoExistente.setData(request.data());
+        eventoExistente.setLocal(request.local());
+        eventoExistente.setAtivo(request.ativo());
+
+        Evento updatedEvent = eventoRepository.save(eventoExistente);
+        return EventoMapper.toEventoResponse(updatedEvent);
+    }
+
+    public void deletarEvento(Long id, Usuario usuarioLogado) {
+
+    }
+
 }

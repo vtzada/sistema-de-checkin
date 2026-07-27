@@ -1,0 +1,2 @@
+ALTER TABLE evento
+ADD COLUMN usuario_id BIGINT NOT NULL REFERENCES usuario(id);

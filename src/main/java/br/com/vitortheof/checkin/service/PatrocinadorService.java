@@ -2,6 +2,7 @@ package br.com.vitortheof.checkin.service;
 
 import br.com.vitortheof.checkin.dto.request.PatrocinadorRequest;
 import br.com.vitortheof.checkin.dto.response.PatrocinadorResponse;
+import br.com.vitortheof.checkin.exception.BusinessException;
 import br.com.vitortheof.checkin.exception.ResourceNotFoundException;
 import br.com.vitortheof.checkin.mapper.PatrocinadorMapper;
 import br.com.vitortheof.checkin.model.Evento;
@@ -23,12 +24,16 @@ public class PatrocinadorService {
     private final EventoRepository eventoRepository;
     private final PacoteRepository pacoteRepository;
 
-    public PatrocinadorResponse createPatrocinador(PatrocinadorRequest request) {
-        Evento evento = eventoRepository.findById(request.eventoId())
+    public PatrocinadorResponse createPatrocinador(Long eventoId, PatrocinadorRequest request) {
+        Evento evento = eventoRepository.findById(eventoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Evento não encontrado!"));
 
         Pacote pacote = pacoteRepository.findById(request.pacoteId())
                 .orElseThrow(() -> new ResourceNotFoundException("Pacote não encontrado!"));
+
+        if (!pacote.getEvento().getId().equals(evento.getId())) {
+            throw new BusinessException("Este pacote não existe.");
+        }
 
         Patrocinador patrocinador = Patrocinador.builder()
                 .nome(request.nome())
@@ -36,6 +41,7 @@ public class PatrocinadorService {
                 .evento(evento)
                 .pacote(pacote)
                 .build();
+
         Patrocinador savedPatrocinador = patrocinadorRepository.save(patrocinador);
 
         return PatrocinadorMapper.toPatrocinadorResponse(savedPatrocinador);
@@ -50,6 +56,14 @@ public class PatrocinadorService {
 
     public List<PatrocinadorResponse> findAll() {
         List<Patrocinador> patrocinadores = patrocinadorRepository.findAll();
+        return patrocinadores.stream()
+                .map(PatrocinadorMapper::toPatrocinadorResponse)
+                .toList();
+    }
+
+    public List<PatrocinadorResponse> findByEventoId(Long eventoId) {
+        List<Patrocinador> patrocinadores = patrocinadorRepository.findByEventoId(eventoId);
+
         return patrocinadores.stream()
                 .map(PatrocinadorMapper::toPatrocinadorResponse)
                 .toList();

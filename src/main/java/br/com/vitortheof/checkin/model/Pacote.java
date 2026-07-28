@@ -28,6 +28,10 @@ public class Pacote {
 
     private int limiteConvidados;
 
+    @ManyToOne
+    @JoinColumn(name = "evento_id", nullable = false)
+    private Evento evento;
+
     @OneToMany(mappedBy = "pacote")
     private List<Patrocinador> patrocinadores;
 

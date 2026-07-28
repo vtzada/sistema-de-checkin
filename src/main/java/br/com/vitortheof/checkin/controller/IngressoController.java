@@ -27,7 +27,7 @@ public class IngressoController {
     }
 
     @PostMapping("/checkin")
-    @PreAuthorize("@eventSecurity.canCheckInByQr(#codigoQR, authentication.principal)")
+    @PreAuthorize("@eventSecurity.canCheckInByQR(#codigoQR, authentication.principal)")
     public ResponseEntity<IngressoResponse> realizarCheckin(@RequestParam UUID codigoQR, @AuthenticationPrincipal Usuario usuarioLogado) {
         IngressoResponse response = ingressoService.realizarCheckin(codigoQR);
         return ResponseEntity.ok(response);

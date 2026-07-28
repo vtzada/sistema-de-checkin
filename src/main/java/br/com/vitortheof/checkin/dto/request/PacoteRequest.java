@@ -2,6 +2,7 @@ package br.com.vitortheof.checkin.dto.request;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record PacoteRequest(
                             @NotBlank(message = "O nome do pacote é obrigatório.")

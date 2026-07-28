@@ -37,13 +37,13 @@ public class ConvidadoService {
 
 
     @Transactional
-    public ConvidadoResponse createConvidado(ConvidadoRequest request) {
+    public ConvidadoResponse createConvidado(Long patrocinadorId, ConvidadoRequest request) {
 
         if (convidadoRepository.existsByEmail(request.email())) {
             throw new ResourceAlreadyExistsException("Este e-mail já está cadastrado.");
         }
 
-        Patrocinador patrocinador = patrocinadorRepository.findById(request.patrocinadorId())
+        Patrocinador patrocinador = patrocinadorRepository.findById(patrocinadorId)
                 .orElseThrow(() -> new ResourceNotFoundException("Patrocinador não encontrado."));
 
         validarLimite(patrocinador, request.tipoConvidado());
@@ -86,9 +86,16 @@ public class ConvidadoService {
 
         try {
             emailService.enviarEmailIngresso(convidado, ingresso, qrCodeBytes);
-        } catch (BusinessException e) {
+        } catch (Exception e) {
             log.error("Falha ao enviar e-mail de ingresso para o convidado id={}, email={}", convidado.getId(), convidado.getEmail(), e);
         }
+    }
+
+    public List<ConvidadoResponse> findByPatrocinadorId(Long patrocinadorId) {
+        List<Convidado> convidados = convidadoRepository.findByPatrocinadorId(patrocinadorId);
+        return convidados.stream()
+                .map(ConvidadoMapper::toConvidadoResponse)
+                .toList();
     }
 
     public ConvidadoResponse findById(Long id) {

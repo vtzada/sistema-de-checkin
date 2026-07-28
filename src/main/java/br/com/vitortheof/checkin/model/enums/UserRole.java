@@ -3,7 +3,8 @@ package br.com.vitortheof.checkin.model.enums;
 public enum UserRole {
     ADMIN("admin"),
     PRODUTOR("produtor"),
-    PORTARIA("portaria");
+    PORTARIA("portaria"),
+    CLIENTE("cliente");
 
     private String role;
 

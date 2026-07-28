@@ -6,8 +6,6 @@ import jakarta.validation.constraints.NotNull;
 public record PatrocinadorRequest(
         @NotBlank(message = "Nome é obrigatório")
         String nome,
-        @NotNull(message = "Evento é obrigatório")
-        Long eventoId,
         @NotNull(message = "Pacote é obrigatório")
         Long pacoteId,
         boolean ativo) {

@@ -25,7 +25,6 @@ public class EventoController {
     @PostMapping
     @PreAuthorize("hasRole('PRODUTOR') or hasRole('ADMIN')")
     public ResponseEntity<EventoResponse> createEvento(@Valid  @RequestBody EventoRequest request, @AuthenticationPrincipal Usuario usuarioLogado) {
-
         EventoResponse response = eventoService.createEvento(request, usuarioLogado);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

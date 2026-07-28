@@ -12,7 +12,5 @@ public record ConvidadoRequest(
         @Email(message = "O formato do e-mail informado é inválido.")
         String email,
         @NotNull(message = "O tipo de convidado é obrigatório.")
-        TipoConvidado tipoConvidado,
-        @NotNull(message = "O ID do Patrocinador é obrigatório.")
-        Long patrocinadorId) {
+        TipoConvidado tipoConvidado) {
 }

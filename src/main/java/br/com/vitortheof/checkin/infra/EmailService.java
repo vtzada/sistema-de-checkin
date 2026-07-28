@@ -24,7 +24,7 @@ public class EmailService {
     @Autowired
     private TemplateEngine templateEngine;
 
-    private static final String URL_BASE_CONFIRMACAO = "http://localhost:8080/evento/convidado/confirmar";
+    private static final String URL_BASE_CONFIRMACAO = "http://localhost:8080/patrocinador/confirmar";
     @Autowired
     private MailSender mailSender;
 

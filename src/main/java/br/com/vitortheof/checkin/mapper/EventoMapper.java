@@ -10,6 +10,7 @@ public class EventoMapper {
 
     public static EventoResponse toEventoResponse(Evento evento) {
         return EventoResponse.builder()
+                .id(evento.getId())
                 .nome(evento.getNome())
                 .data(evento.getData())
                 .local(evento.getLocal())

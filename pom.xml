@@ -52,6 +52,11 @@
             <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>3.0.3</version>
+        </dependency>
+        <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
         </dependency>

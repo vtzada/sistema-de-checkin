@@ -24,6 +24,8 @@ public class TokenService {
             return JWT.create()
                     .withIssuer("checkin-api")
                     .withSubject(usuario.getEmail())
+                    .withClaim("id", usuario.getId())
+                    .withClaim("role", usuario.getRole().name())
                     .withExpiresAt(gerarDataExpiracao())
                     .sign(algorithm);
         } catch (JWTCreationException e) {

@@ -5,5 +5,5 @@ import lombok.Builder;
 import java.time.LocalDateTime;
 
 @Builder
-public record EventoResponse(String nome, LocalDateTime data, String local) {
+public record EventoResponse(Long id, String nome, LocalDateTime data, String local) {
 }

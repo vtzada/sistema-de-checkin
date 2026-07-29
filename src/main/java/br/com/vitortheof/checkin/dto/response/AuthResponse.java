@@ -1,4 +1,10 @@
 package br.com.vitortheof.checkin.dto.response;
 
-public record AuthResponse(String token) {
+import br.com.vitortheof.checkin.model.enums.UserRole;
+
+public record AuthResponse(String token,
+                           Long id,
+                           String nome,
+                           String email,
+                           UserRole role) {
 }

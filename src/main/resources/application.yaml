@@ -31,3 +31,5 @@ api:
   security:
     token:
       secret: "${JWT_SECRET:my-secret-key}"
+spring-doc:
+  paths-to-match:

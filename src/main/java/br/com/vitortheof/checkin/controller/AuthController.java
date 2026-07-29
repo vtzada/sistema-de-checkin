@@ -25,17 +25,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
-    @Autowired
-    private UsuarioRepository repository;
+    private final UsuarioRepository repository;
 
-    @Autowired
-    private TokenService tokenService;
+    private final TokenService tokenService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody @Valid AuthRequest request) {
@@ -43,9 +39,15 @@ public class AuthController {
         var usernamePassword = new UsernamePasswordAuthenticationToken(request.email(), request.senha());
         var auth = this.authenticationManager.authenticate(usernamePassword);
 
-        var token = tokenService.gerarToken((Usuario) auth.getPrincipal());
+        Usuario usuarioLogado = (Usuario) auth.getPrincipal();
 
-        return ResponseEntity.ok(new AuthResponse(token));
+        var token = tokenService.gerarToken(usuarioLogado);
+
+        return ResponseEntity.ok(new AuthResponse(token,
+                usuarioLogado.getId(),
+                usuarioLogado.getNome(),
+                usuarioLogado.getEmail(),
+                usuarioLogado.getRole()));
     }
 
     @PostMapping("/register")

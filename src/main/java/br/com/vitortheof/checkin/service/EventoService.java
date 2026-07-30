@@ -55,6 +55,13 @@ public class EventoService {
         return EventoMapper.toEventoResponse(updatedEvent);
     }
 
+    public List<EventoResponse> listarMeusEventos(Long produtorId) {
+        List<Evento> eventos = eventoRepository.findByProdutorId(produtorId);
+        return eventos.stream()
+                .map(EventoMapper::toEventoResponse)
+                .toList();
+    }
+
     public void deleteEvento(Long eventoId) {
         Evento eventoExistente = eventoRepository.findById(eventoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Evento não encontrado"));

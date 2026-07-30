@@ -27,30 +27,31 @@ public class EventoController {
 
     @PostMapping
     @PreAuthorize("hasRole('PRODUTOR') or hasRole('ADMIN')")
-    public ResponseEntity<EventoResponse> createEvento(@Valid  @RequestBody EventoRequest request, @AuthenticationPrincipal Usuario usuarioLogado) {
+    public ResponseEntity<EventoResponse> createEvento(@Valid @RequestBody EventoRequest request, @AuthenticationPrincipal Usuario usuarioLogado) {
         EventoResponse response = eventoService.createEvento(request, usuarioLogado);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EventoResponse> findById(@PathVariable Long id){
+    public ResponseEntity<EventoResponse> findById(@PathVariable Long id) {
         EventoResponse response = eventoService.findById(id);
         return ResponseEntity.ok().body(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<EventoResponse>> findAll(){
+    public ResponseEntity<List<EventoResponse>> findAll() {
         List<EventoResponse> response = eventoService.findAll();
         return ResponseEntity.ok().body(response);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("@eventSecurity.isOwnerOrAdminOfEvento(#id, authentication.principal)")
-    public ResponseEntity<EventoResponse> updateEvento(@PathVariable Long id, @Valid @RequestBody EventoRequest request, @AuthenticationPrincipal Usuario usuarioLogado){
+    public ResponseEntity<EventoResponse> updateEvento(@PathVariable Long id, @Valid @RequestBody EventoRequest request, @AuthenticationPrincipal Usuario usuarioLogado) {
 
         EventoResponse response = eventoService.updateEvento(id, request);
         return ResponseEntity.ok().body(response);
     }
+
     @DeleteMapping("/{id}")
     @PreAuthorize("@eventSecurity.isOwnerOrAdminOfEvento(#id, authentication.principal)")
     public ResponseEntity<Void> deleteEvento(@PathVariable Long id) {
@@ -59,8 +60,8 @@ public class EventoController {
     }
 
     @GetMapping("/meus-eventos")
-    public ResponseEntity<List<Evento>> listarMeusEventos(@AuthenticationPrincipal Usuario usuario) {
-        List<Evento> eventos = eventoRepository.findByProdutorId(usuario.getId());
-        return ResponseEntity.ok(eventos);
+    public ResponseEntity<List<EventoResponse>> listarMeusEventos(@AuthenticationPrincipal Usuario usuario) {
+        return ResponseEntity.ok(eventoService.listarMeusEventos(usuario.getId())
+        );
     }
 }

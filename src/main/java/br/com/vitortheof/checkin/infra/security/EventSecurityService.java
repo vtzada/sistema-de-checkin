@@ -52,16 +52,6 @@ public class EventSecurityService {
                 .orElse(false);
     }
 
-    public boolean canCheckIn(Long convidadoId, Usuario usuarioLogado) {
-        if (usuarioLogado == null) return false;
-        if (usuarioLogado.getRole() == UserRole.ADMIN || usuarioLogado.getRole() == UserRole.PORTARIA) {
-            return true;
-        }
-        // Se for produtor, só pode dar check-in nos convidados do evento dele
-        return isOwnerOrAdminOfConvidado(convidadoId, usuarioLogado);
-    }
-
-    // ATENÇÃO: Nome do método alterado para bater EXATAMENTE com o @PreAuthorize do Controller (QR maiúsculo)
     public boolean canCheckInByQR(UUID codigoQR, Usuario usuarioLogado) {
         if (usuarioLogado == null) return false;
 

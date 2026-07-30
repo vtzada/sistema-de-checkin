@@ -21,6 +21,12 @@ flowchart LR
     G --> H[Check-in na portaria<br/>via leitura do QR Code]
 ```
 
+## 💡 De onde veio a ideia
+
+A inspiração para esse projeto surgiu de uma experiência que tive como staff em um evento. Na ocasião, a entrada dos convidados era controlada por meio de uma planilha, o que acabava gerando filas, atrasos e algumas confusões durante o credenciamento. Além disso, também havia dificuldade para saber exatamente quem havia comparecido ao evento e obter informações como o total de participantes presentes. Pensando nisso, decidi desenvolver uma solução para tornar esse processo mais rápido, organizado e confiável — daí a API de check-in via QR Code.
+
+O detalhe do `TipoConvidado` veio de outro evento do qual participei, um networking privado (só para convidados): cada patrocinador montava um time, e enquanto as pessoas faziam networking rolava em paralelo um campeonato de futebol entre os times dos patrocinadores. É por isso que o `TipoConvidado` tem três categorias e não só "VIP" e "comum": **`JOGADOR`** representa quem joga pelo time do patrocinador, separado de **`VIP`** (convidado especial do patrocinador) e **`CONVIDADO_COMUM`**. Cada `Pacote` define limites independentes para cada tipo (`limiteJogadores`, `limiteVips`, `limiteConvidados`), simulando a lógica real do evento: um patrocinador contrata um pacote que dá direito a X jogadores pro time, Y convidados VIP e Z convidados comuns.
+
 ## ✅ Funcionalidades
 
 - **Gestão de eventos**: CRUD de eventos, com controle de propriedade (apenas o produtor dono ou um admin pode editar/excluir)

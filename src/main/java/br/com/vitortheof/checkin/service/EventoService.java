@@ -7,6 +7,7 @@ import br.com.vitortheof.checkin.mapper.EventoMapper;
 import br.com.vitortheof.checkin.model.Evento;
 import br.com.vitortheof.checkin.model.Usuario;
 import br.com.vitortheof.checkin.repository.EventoRepository;
+import br.com.vitortheof.checkin.utils.HtmlSanitizer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -47,14 +48,16 @@ public class EventoService {
         eventoExistente.setNome(request.nome());
         eventoExistente.setData(request.data());
         eventoExistente.setLocal(request.local());
+        eventoExistente.setDescricao(HtmlSanitizer.sanitizar(request.descricao()));
         eventoExistente.setAtivo(request.ativo());
 
         Evento updatedEvent = eventoRepository.save(eventoExistente);
         return EventoMapper.toEventoResponse(updatedEvent);
     }
 
-    public void deletarEvento(Long id, Usuario usuarioLogado) {
-
+    public void deleteEvento(Long eventoId) {
+        Evento eventoExistente = eventoRepository.findById(eventoId)
+                .orElseThrow(() -> new ResourceNotFoundException("Evento não encontrado"));
+        eventoRepository.delete(eventoExistente);
     }
-
 }

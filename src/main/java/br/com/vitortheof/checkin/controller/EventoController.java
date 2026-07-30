@@ -2,7 +2,9 @@ package br.com.vitortheof.checkin.controller;
 
 import br.com.vitortheof.checkin.dto.request.EventoRequest;
 import br.com.vitortheof.checkin.dto.response.EventoResponse;
+import br.com.vitortheof.checkin.model.Evento;
 import br.com.vitortheof.checkin.model.Usuario;
+import br.com.vitortheof.checkin.repository.EventoRepository;
 import br.com.vitortheof.checkin.service.EventoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import java.util.List;
 public class EventoController {
 
     private final EventoService eventoService;
+    private final EventoRepository eventoRepository;
 
     @PostMapping
     @PreAuthorize("hasRole('PRODUTOR') or hasRole('ADMIN')")
@@ -30,7 +33,6 @@ public class EventoController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("@eventSecurity.isOwnerOrAdminOfEvento(#id, authentication.principal)")
     public ResponseEntity<EventoResponse> findById(@PathVariable Long id){
         EventoResponse response = eventoService.findById(id);
         return ResponseEntity.ok().body(response);
@@ -48,5 +50,17 @@ public class EventoController {
 
         EventoResponse response = eventoService.updateEvento(id, request);
         return ResponseEntity.ok().body(response);
+    }
+    @DeleteMapping("/{id}")
+    @PreAuthorize("@eventSecurity.isOwnerOrAdminOfEvento(#id, authentication.principal)")
+    public ResponseEntity<Void> deleteEvento(@PathVariable Long id) {
+        eventoService.deleteEvento(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/meus-eventos")
+    public ResponseEntity<List<Evento>> listarMeusEventos(@AuthenticationPrincipal Usuario usuario) {
+        List<Evento> eventos = eventoRepository.findByProdutorId(usuario.getId());
+        return ResponseEntity.ok(eventos);
     }
 }

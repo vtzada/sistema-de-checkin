@@ -42,7 +42,6 @@ public class PatrocinadorController {
     }
 
     @GetMapping("/{eventoId}/patrocinadores")
-    @PreAuthorize("@eventSecurity.isOwnerOrAdminOfEvento(#eventoId, authentication.principal)")
     public ResponseEntity<List<PatrocinadorResponse>> findAllByEvento(@PathVariable Long eventoId) {
         return ResponseEntity.ok(patrocinadorService.findByEventoId(eventoId));
     }

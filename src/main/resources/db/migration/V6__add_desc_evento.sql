@@ -1,0 +1,1 @@
+ALTER TABLE evento ADD COLUMN descricao TEXT;

@@ -13,5 +13,7 @@ public record EventoRequest(@NotBlank(message = "O nome do evento é obrigatóri
                             LocalDateTime data,
                             @NotBlank(message = "O local do evento é obrigatório.")
                             String local,
+                            @Size(max = 10000, message = "A descrição não pode exceder 10.000 caracteres")
+                            String descricao,
                             boolean ativo) {
 }

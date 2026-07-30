@@ -10,6 +10,7 @@ public class PacoteMapper {
 
     public static PacoteResponse toPacoteResponse(Pacote pacote) {
         return PacoteResponse.builder()
+                .id(pacote.getId())
                 .nome(pacote.getNome())
                 .limiteJogadores(pacote.getLimiteJogadores())
                 .limiteVips(pacote.getLimiteVips())

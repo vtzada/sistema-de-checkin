@@ -2,6 +2,7 @@ package br.com.vitortheof.checkin.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -29,6 +30,10 @@ public class Evento {
 
     @Column(nullable = false)
     private String local;
+
+    @Column(columnDefinition = "TEXT")
+    @Size(max = 10000, message = "A descrição não pode exceder 10.000 caracteres")
+    private String descricao;
 
     private boolean ativo;
 

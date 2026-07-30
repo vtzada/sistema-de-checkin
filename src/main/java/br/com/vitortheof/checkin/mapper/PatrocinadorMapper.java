@@ -9,6 +9,7 @@ public class PatrocinadorMapper {
 
     public static PatrocinadorResponse toPatrocinadorResponse(Patrocinador patrocinador) {
         return PatrocinadorResponse.builder()
+                .id(patrocinador.getId())
                 .nome(patrocinador.getNome())
                 .nomeEvento(patrocinador.getEvento().getNome())
                 .nomePacote(patrocinador.getPacote().getNome())

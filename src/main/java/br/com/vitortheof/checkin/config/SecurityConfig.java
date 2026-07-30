@@ -38,11 +38,15 @@ public class SecurityConfig {
                 // config para bloqueio e liberaçao das rotas.
                 .authorizeHttpRequests(authorize ->
                         authorize.requestMatchers(HttpMethod.POST, "/auth/**").permitAll()
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/patrocinador/confirmar").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/v3/api-docs/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/swagger-ui/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/swagger-ui.html").permitAll()
-
+                                .requestMatchers(HttpMethod.GET, "/evento/ingressos").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/evento/*").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/evento").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/evento/*/patrocinadores").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

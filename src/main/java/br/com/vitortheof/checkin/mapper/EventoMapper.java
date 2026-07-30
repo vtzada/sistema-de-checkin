@@ -3,6 +3,7 @@ package br.com.vitortheof.checkin.mapper;
 import br.com.vitortheof.checkin.dto.request.EventoRequest;
 import br.com.vitortheof.checkin.dto.response.EventoResponse;
 import br.com.vitortheof.checkin.model.Evento;
+import br.com.vitortheof.checkin.utils.HtmlSanitizer;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,6 +15,7 @@ public class EventoMapper {
                 .nome(evento.getNome())
                 .data(evento.getData())
                 .local(evento.getLocal())
+                .descricao(evento.getDescricao())
                 .build();
     }
 
@@ -22,6 +24,7 @@ public class EventoMapper {
                 .nome(request.nome())
                 .data(request.data())
                 .local(request.local())
+                .descricao(HtmlSanitizer.sanitizar(request.descricao()))
                 .ativo(request.ativo())
                 .build();
     }

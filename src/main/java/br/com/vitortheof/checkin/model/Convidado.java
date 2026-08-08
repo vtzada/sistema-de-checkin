@@ -4,19 +4,18 @@ import br.com.vitortheof.checkin.model.enums.StatusConfirmacao;
 import br.com.vitortheof.checkin.model.enums.TipoConvidado;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@PrimaryKeyJoinColumn(name = "id")
+@DiscriminatorValue("CONVIDADO")
 @Table(name = "convidado")
-public class Convidado {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Convidado extends OrigemIngresso {
 
     @Column(nullable = false)
     private String nomeCompleto;

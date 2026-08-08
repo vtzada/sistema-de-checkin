@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h2 { color: #333333; margin-top: 0; }
+        p { color: #666666; line-height: 1.6; }
+        .qrcode-box {
+            margin: 24px 0;
+            padding: 20px;
+            background-color: #fafafa;
+            border-radius: 8px;
+            border: 1px solid #eeeeee;
+        }
+        .codigo-localizador {
+            font-family: monospace;
+            font-size: 20px;
+            letter-spacing: 2px;
+            font-weight: bold;
+            color: #333333;
+            margin-top: 12px;
+        }
+        .info-table {
+            width: 100%;
+            text-align: left;
+            margin: 20px 0;
+            border-collapse: collapse;
+        }
+        .info-table td {
+            padding: 8px 0;
+            border-bottom: 1px solid #eeeeee;
+            color: #444444;
+            font-size: 14px;
+        }
+        .info-table td.label {
+            font-weight: bold;
+            width: 40%;
+            color: #666666;
+        }
+        .maps-link {
+            color: #4CAF50;
+            text-decoration: none;
+            font-size: 13px;
+        }
+        .alert-box {
+            margin-top: 24px;
+            padding: 16px;
+            background-color: #fff8e1;
+            border: 1px solid #ffe082;
+            border-radius: 5px;
+            text-align: left;
+            font-size: 13px;
+            color: #7a5c00;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eeeeee;
+            font-size: 12px;
+            color: #999999;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2 th:text="'Olá, ' + ${nomeComprador} + '!'">Olá!</h2>
+    <p>Seu pagamento foi confirmado e seu ingresso para <strong th:text="${nomeEvento}">Evento</strong> está pronto.</p>
+
+    <div class="qrcode-box">
+        <img src="cid:qrcode" alt="QR Code do ingresso" width="220" height="220" />
+        <div class="codigo-localizador" th:text="${localizador}">A3F8C1D2</div>
+        <p style="font-size: 12px; margin-top: 8px;">Código para digitação manual, caso o QR não possa ser lido</p>
+    </div>
+
+    <table class="info-table">
+        <tr>
+            <td class="label">Tipo de ingresso</td>
+            <td th:text="${nomeTipoIngresso}">Pista</td>
+        </tr>
+        <tr>
+            <td class="label">Valor pago</td>
+            <td th:text="'R$ ' + ${#numbers.formatDecimal(precoPago, 1, 2)}">R$ 100,00</td>
+        </tr>
+        <tr>
+            <td class="label">Data e horário</td>
+            <td th:text="${#temporals.format(dataEvento, 'dd/MM/yyyy HH:mm')}">01/01/2026 20:00</td>
+        </tr>
+        <tr>
+            <td class="label">Local</td>
+            <td th:text="${enderecoEvento}">Endereço do evento</td>
+        </tr>
+    </table>
+
+    <a th:href="${linkMaps}" class="maps-link" target="_blank">Ver localização no Google Maps</a>
+
+    <div class="alert-box">
+        <p><strong>Ingresso único, pessoal e intransferível.</strong> Válido para apenas uma entrada.</p>
+        <p>Não compartilhe print deste ingresso nas redes sociais — isso permite que seu código seja copiado.</p>
+        <p>Apresente este QR Code junto com um documento original com foto na portaria.</p>
+    </div>
+
+    <div class="footer">
+        <p>Se você não reconhece esta compra, entre em contato com o suporte do evento.</p>
+    </div>
+</div>
+</body>
+</html>

@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 @Builder
 public record LoteResponse(Long id, int numeroOrdem,
+                           String nomeTipoIngresso,
                            BigDecimal preco, int qtdTotal,
                            int qtdVendida, int qtdDisponivel,
                            LocalDateTime dataInicio, LocalDateTime dataFim) {

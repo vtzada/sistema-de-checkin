@@ -12,6 +12,7 @@ public class LoteMapper {
         return LoteResponse.builder()
                 .id(lote.getId())
                 .numeroOrdem(lote.getNumeroOrdem())
+                .nomeTipoIngresso(lote.getTipoIngresso() != null ? lote.getTipoIngresso().getNome() : null)
                 .preco(lote.getPreco())
                 .qtdTotal(lote.getQtdTotal())
                 .qtdVendida(lote.getQtdVendida())

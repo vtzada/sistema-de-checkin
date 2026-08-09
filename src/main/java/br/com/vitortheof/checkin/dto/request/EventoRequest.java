@@ -1,5 +1,6 @@
 package br.com.vitortheof.checkin.dto.request;
 
+import br.com.vitortheof.checkin.model.enums.CategoriaEvento;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -13,7 +14,10 @@ public record EventoRequest(@NotBlank(message = "O nome do evento é obrigatóri
                             LocalDateTime data,
                             @NotBlank(message = "O local do evento é obrigatório.")
                             String local,
+                            @NotNull(message = "A categoria do evento é obrigatória.")
+                            CategoriaEvento categoria,
                             @Size(max = 10000, message = "A descrição não pode exceder 10.000 caracteres")
                             String descricao,
+                            String bannerUrl,
                             boolean ativo) {
 }

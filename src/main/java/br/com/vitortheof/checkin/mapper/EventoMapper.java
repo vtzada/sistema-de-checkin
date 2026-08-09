@@ -16,6 +16,8 @@ public class EventoMapper {
                 .data(evento.getData())
                 .local(evento.getLocal())
                 .descricao(evento.getDescricao())
+                .bannerUrl(evento.getBannerUrl())
+                .categoria(evento.getCategoria())
                 .build();
     }
 
@@ -25,6 +27,8 @@ public class EventoMapper {
                 .data(request.data())
                 .local(request.local())
                 .descricao(HtmlSanitizer.sanitizar(request.descricao()))
+                .bannerUrl(request.bannerUrl())
+                .categoria(request.categoria())
                 .ativo(request.ativo())
                 .build();
     }

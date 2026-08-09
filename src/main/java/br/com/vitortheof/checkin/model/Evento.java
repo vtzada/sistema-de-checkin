@@ -1,5 +1,6 @@
 package br.com.vitortheof.checkin.model;
 
+import br.com.vitortheof.checkin.model.enums.CategoriaEvento;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -37,6 +38,13 @@ public class Evento {
 
     private boolean ativo;
 
+    @Column(name = "banner_url")
+    private String bannerUrl;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CategoriaEvento categoria;
+
     @OneToMany(mappedBy = "evento")
     private List<Patrocinador> patrocinadores;
 
@@ -47,7 +55,5 @@ public class Evento {
     @CreationTimestamp
     @Column(name = "criado_em")
     private Instant criadoEm;
-
-
 
 }

@@ -15,7 +15,7 @@ spring:
   profiles:
     active: local
   datasource:
-    url: jdbc:postgresql://localhost:5432/checkin
+    url: jdbc:postgresql://localhost:5432/systemcheckin
     username: postgres
     password: ${DB_PASSWORD}
   jpa:

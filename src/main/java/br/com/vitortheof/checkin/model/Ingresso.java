@@ -31,9 +31,8 @@ public class Ingresso {
 
     private LocalDateTime dataHoraEntrada;
 
-    @ManyToOne
-    @JoinColumn(name = "convidado_id", nullable = false)
-    private Convidado convidado;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private OrigemIngresso origem;
 
     @CreationTimestamp
     @Column(name = "criado_em")

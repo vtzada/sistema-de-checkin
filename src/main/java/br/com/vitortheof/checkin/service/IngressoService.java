@@ -6,6 +6,7 @@ import br.com.vitortheof.checkin.exception.ResourceNotFoundException;
 import br.com.vitortheof.checkin.mapper.IngressoMapper;
 import br.com.vitortheof.checkin.model.Convidado;
 import br.com.vitortheof.checkin.model.Ingresso;
+import br.com.vitortheof.checkin.model.OrigemIngresso;
 import br.com.vitortheof.checkin.model.enums.StatusIngresso;
 import br.com.vitortheof.checkin.repository.ConvidadoRepository;
 import br.com.vitortheof.checkin.repository.IngressoRepository;
@@ -24,9 +25,13 @@ public class IngressoService {
     private final IngressoRepository ingressoRepository;
 
     @Transactional
-    public Ingresso gerarIngresso(Convidado convidado) {
+    public Ingresso gerarIngresso(OrigemIngresso origem) {
 
-        Ingresso ingresso = Ingresso.builder().codigoQR(UUID.randomUUID()).status(StatusIngresso.VALIDO).convidado(convidado).build();
+        Ingresso ingresso = Ingresso.builder().
+                codigoQR(UUID.randomUUID()).
+                status(StatusIngresso.VALIDO).
+                origem(origem).
+                build();
 
         return ingressoRepository.save(ingresso);
     }

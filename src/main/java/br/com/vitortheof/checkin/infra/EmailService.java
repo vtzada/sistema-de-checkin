@@ -3,6 +3,8 @@ package br.com.vitortheof.checkin.infra;
 import br.com.vitortheof.checkin.exception.BusinessException;
 import br.com.vitortheof.checkin.model.Convidado;
 import br.com.vitortheof.checkin.model.Ingresso;
+import br.com.vitortheof.checkin.model.ItemPedido;
+import br.com.vitortheof.checkin.model.Pedido;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -78,6 +80,43 @@ public class EmailService {
             context.setVariable("localizador", localizador);
 
             String htmlContent = templateEngine.process("email/ingresso-qrcode", context);
+
+            helper.setText(htmlContent, true);
+
+            helper.addInline("qrcode", new ByteArrayResource(qrCodeBytes), "image/png");
+
+            javaMailSender.send(message);
+
+        } catch (Exception e) {
+            throw new BusinessException("Falha ao enviar e-mail do ingresso: " + e.getMessage());
+        }
+    }
+
+    public void enviarEmailIngressoCompra(EmailDadosIngressoCompra dados, byte[] qrCodeBytes) {
+
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setFrom("drakecrafts@gmail.com");
+            helper.setTo(dados.emailComprador());
+            helper.setSubject("Seu ingresso - " + dados.nomeEvento());
+
+            String localizador = dados.codigoQR().substring(0, 8).toUpperCase();
+            String linkMaps = "https://www.google.com/maps/search/?api=1&query="
+                    + dados.enderecoEvento().replace(" ", "+");
+
+            Context context = new Context();
+            context.setVariable("nomeComprador", dados.nomeComprador());
+            context.setVariable("nomeEvento", dados.nomeEvento());
+            context.setVariable("dataEvento", dados.dataEvento());
+            context.setVariable("enderecoEvento", dados.enderecoEvento());
+            context.setVariable("linkMaps", linkMaps);
+            context.setVariable("nomeTipoIngresso", dados.nomeTipoIngresso());
+            context.setVariable("precoPago", dados.precoPago());
+            context.setVariable("localizador", localizador);
+
+            String htmlContent = templateEngine.process("email/ingresso-compra-qrcode", context);
 
             helper.setText(htmlContent, true);
 

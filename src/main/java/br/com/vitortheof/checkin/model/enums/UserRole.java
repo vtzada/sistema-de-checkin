@@ -1,19 +1,16 @@
 package br.com.vitortheof.checkin.model.enums;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public enum UserRole {
     ADMIN("admin"),
     PRODUTOR("produtor"),
     PORTARIA("portaria"),
     CLIENTE("cliente");
 
-    private String role;
-
-    UserRole(String role){
-        this.role = role;
-    }
-
-    public String getRole() {
-        return role;
-    }
+    private final String role;
 
 }

@@ -14,6 +14,8 @@ public record LoteRequest(
         BigDecimal preco,
         @Min(value = 1, message = "A quantidade total deve ser pelo menos 1.")
         int qtdTotal,
+        @NotNull(message = "A data de ínicio não pode ser nula")
         LocalDateTime dataInicio,
+        @NotNull(message = "A data de fim não pode ser nula")
         LocalDateTime dataFim) {
 }

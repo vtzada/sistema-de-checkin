@@ -2,6 +2,7 @@ package br.com.vitortheof.checkin.repository;
 
 import br.com.vitortheof.checkin.model.Lote;
 import jakarta.persistence.LockModeType;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
@@ -28,6 +29,13 @@ public interface LoteRepository extends JpaRepository<Lote, Long> {
     @Query("UPDATE Lote l SET l.qtdVendida = l.qtdVendida - :qtd " +
             "WHERE l.id = :id AND l.qtdVendida - :qtd >= 0")
     int liberarEstoque(@Param("id") Long id, @Param("qtd") int qtd);
+
+    @Query("SELECT l.tipoIngresso.evento, COALESCE(SUM(l.qtdVendida), 0) " +
+            "FROM Lote l " +
+            "WHERE l.tipoIngresso.evento.ativo = true " +
+            "GROUP BY l.tipoIngresso.evento " +
+            "ORDER BY COALESCE(SUM(l.qtdVendida), 0) DESC")
+    List<Object[]> findEventosMaisVendidosRaw(Pageable pageable);
 
     List<Lote> findByTipoIngressoId(Long tipoIngressoId);
 

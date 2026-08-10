@@ -4,6 +4,7 @@ import br.com.vitortheof.checkin.dto.request.EventoRequest;
 import br.com.vitortheof.checkin.dto.response.EventoResponse;
 import br.com.vitortheof.checkin.model.Evento;
 import br.com.vitortheof.checkin.model.Usuario;
+import br.com.vitortheof.checkin.model.enums.CategoriaEvento;
 import br.com.vitortheof.checkin.repository.EventoRepository;
 import br.com.vitortheof.checkin.service.EventoService;
 import jakarta.validation.Valid;
@@ -39,9 +40,21 @@ public class EventoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EventoResponse>> findAll() {
+    public ResponseEntity<List<EventoResponse>> findAll(
+            @RequestParam(required = false) String busca,
+            @RequestParam(required = false) CategoriaEvento categoria) {
+
+        if (busca != null || categoria != null) {
+            return ResponseEntity.ok(eventoService.buscarEventos(busca, categoria));
+        }
         List<EventoResponse> response = eventoService.findAll();
         return ResponseEntity.ok().body(response);
+    }
+
+    @GetMapping("/em-alta")
+    public ResponseEntity<List<EventoResponse>> listarEventosEmAlta(
+            @RequestParam(defaultValue = "10") int limite) {
+        return ResponseEntity.ok(eventoService.listarEventosEmAlta(limite));
     }
 
     @PutMapping("/{id}")

@@ -29,4 +29,15 @@ public class Lote {
     private int qtdVendida;
     private LocalDateTime dataInicio;
     private LocalDateTime dataFim;
+
+    public boolean isDisponivel() {
+        LocalDateTime agora = LocalDateTime.now();
+
+        boolean dentroDoPeriodo = (dataInicio == null || !agora.isBefore(dataInicio))
+                && (dataFim == null || !agora.isAfter(dataFim));
+
+        boolean temEstoque = qtdVendida < qtdTotal;
+
+        return dentroDoPeriodo && temEstoque;
+    }
 }

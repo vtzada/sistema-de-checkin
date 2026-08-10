@@ -12,7 +12,9 @@ import br.com.vitortheof.checkin.repository.TipoIngressoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +50,16 @@ public class LoteService {
     }
 
     public List<LoteResponse> findDisponiveisByEventoId(Long eventoId) {
-        return loteRepository.findByTipoIngressoEventoId(eventoId).stream()
+        List<Lote> lotes = loteRepository.findByTipoIngressoEventoId(eventoId);
+
+        return lotes.stream()
+                .filter(Lote::isDisponivel)
+                .collect(Collectors.groupingBy(
+                        lote -> lote.getTipoIngresso().getId(),
+                        Collectors.minBy(Comparator.comparingInt(Lote::getNumeroOrdem))
+                ))
+                .values().stream()
+                .flatMap(java.util.Optional::stream)
                 .map(LoteMapper::toLoteResponse)
                 .toList();
     }

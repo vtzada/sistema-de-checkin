@@ -4,11 +4,15 @@ import br.com.vitortheof.checkin.dto.request.EventoRequest;
 import br.com.vitortheof.checkin.dto.response.EventoResponse;
 import br.com.vitortheof.checkin.exception.ResourceNotFoundException;
 import br.com.vitortheof.checkin.mapper.EventoMapper;
+import br.com.vitortheof.checkin.model.enums.CategoriaEvento;
 import br.com.vitortheof.checkin.model.Evento;
 import br.com.vitortheof.checkin.model.Usuario;
 import br.com.vitortheof.checkin.repository.EventoRepository;
+import br.com.vitortheof.checkin.repository.LoteRepository;
 import br.com.vitortheof.checkin.utils.HtmlSanitizer;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +22,7 @@ import java.util.List;
 public class EventoService {
 
     private final EventoRepository eventoRepository;
+    private final LoteRepository loteRepository;
 
     public EventoResponse findById(Long id) {
         Evento evento = eventoRepository.findById(id)
@@ -49,6 +54,8 @@ public class EventoService {
         eventoExistente.setData(request.data());
         eventoExistente.setLocal(request.local());
         eventoExistente.setDescricao(HtmlSanitizer.sanitizar(request.descricao()));
+        eventoExistente.setCategoria(request.categoria());
+        eventoExistente.setBannerUrl(request.bannerUrl());
         eventoExistente.setAtivo(request.ativo());
 
         Evento updatedEvent = eventoRepository.save(eventoExistente);
@@ -58,6 +65,23 @@ public class EventoService {
     public List<EventoResponse> listarMeusEventos(Long produtorId) {
         List<Evento> eventos = eventoRepository.findByProdutorId(produtorId);
         return eventos.stream()
+                .map(EventoMapper::toEventoResponse)
+                .toList();
+    }
+
+    public List<EventoResponse> buscarEventos(String busca, CategoriaEvento categoria) {
+        String buscar = (busca == null || busca.isBlank()) ? "" : busca.trim();
+
+        return eventoRepository.buscarEventos(buscar, categoria).stream()
+                .map(EventoMapper::toEventoResponse)
+                .toList();
+    }
+
+    public List<EventoResponse> listarEventosEmAlta(int limite) {
+        Pageable pageable = PageRequest.of(0, limite);
+
+        return loteRepository.findEventosMaisVendidosRaw(pageable).stream()
+                .map(linha -> (Evento) linha[0])
                 .map(EventoMapper::toEventoResponse)
                 .toList();
     }

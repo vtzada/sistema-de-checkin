@@ -52,8 +52,8 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity register(@RequestBody @Valid RegisterRequest request) {
-        if (this.repository.findByEmail(request.email()) != null) {
-            return ResponseEntity.badRequest().build();
+        if (this.repository.findByEmail(request.email()).isPresent()) {
+            return ResponseEntity.badRequest().body("Este e-mail ja está cadastrado.");
         }
 
         String encryptedPassword = passwordEncoder.encode(request.senha());

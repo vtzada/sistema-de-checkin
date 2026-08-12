@@ -10,10 +10,7 @@ import br.com.vitortheof.checkin.infra.EmailService;
 import br.com.vitortheof.checkin.infra.MercadoPagoService;
 import br.com.vitortheof.checkin.infra.QrCodeService;
 import br.com.vitortheof.checkin.mapper.PedidoMapper;
-import br.com.vitortheof.checkin.model.Ingresso;
-import br.com.vitortheof.checkin.model.ItemPedido;
-import br.com.vitortheof.checkin.model.Lote;
-import br.com.vitortheof.checkin.model.Pedido;
+import br.com.vitortheof.checkin.model.*;
 import br.com.vitortheof.checkin.model.enums.StatusPedido;
 import br.com.vitortheof.checkin.repository.LoteRepository;
 import br.com.vitortheof.checkin.repository.PedidoRepository;
@@ -21,6 +18,9 @@ import com.mercadopago.resources.order.Order;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jspecify.annotations.NonNull;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,8 +48,7 @@ public class PedidoService {
     private final QrCodeService qrCodeService;
 
     @Transactional
-    public PedidoResponse criarPedido(PedidoRequest request) {
-
+    public PedidoResponse criarPedido(PedidoRequest request, Usuario usuarioLogado) {
         List<ItemPedido> itens = new ArrayList<>();
         BigDecimal valorTotal = BigDecimal.ZERO;
 
@@ -80,6 +79,7 @@ public class PedidoService {
 
         //cria o pedido em si, ja com os itens
         Pedido pedido = Pedido.builder()
+                .usuario(usuarioLogado)
                 .nomeComprador(request.nomeComprador())
                 .emailComprador(request.emailComprador())
                 .valorTotal(valorTotal)

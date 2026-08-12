@@ -26,13 +26,11 @@ public class IngressoService {
 
     @Transactional
     public Ingresso gerarIngresso(OrigemIngresso origem) {
-
         Ingresso ingresso = Ingresso.builder().
                 codigoQR(UUID.randomUUID()).
                 status(StatusIngresso.VALIDO).
                 origem(origem).
                 build();
-
         return ingressoRepository.save(ingresso);
     }
 

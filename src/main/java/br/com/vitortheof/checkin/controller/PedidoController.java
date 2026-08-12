@@ -3,6 +3,7 @@ package br.com.vitortheof.checkin.controller;
 import br.com.vitortheof.checkin.dto.request.PedidoRequest;
 import br.com.vitortheof.checkin.dto.response.PedidoResponse;
 import br.com.vitortheof.checkin.infra.MercadoPagoWebhookValidator;
+import br.com.vitortheof.checkin.model.Usuario;
 import br.com.vitortheof.checkin.service.PedidoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
@@ -26,9 +29,9 @@ public class PedidoController {
 
     @PostMapping("/pedido")
     public ResponseEntity<PedidoResponse> criarPedido(
-            @Valid @RequestBody PedidoRequest request
+            @Valid @RequestBody PedidoRequest request, @AuthenticationPrincipal Usuario usuarioLogado
     ) {
-        PedidoResponse response = pedidoService.criarPedido(request);
+        PedidoResponse response = pedidoService.criarPedido(request, usuarioLogado);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

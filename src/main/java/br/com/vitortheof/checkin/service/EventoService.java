@@ -71,7 +71,6 @@ public class EventoService {
 
     public List<EventoResponse> buscarEventos(String busca, CategoriaEvento categoria) {
         String buscar = (busca == null || busca.isBlank()) ? "" : busca.trim();
-
         return eventoRepository.buscarEventos(buscar, categoria).stream()
                 .map(EventoMapper::toEventoResponse)
                 .toList();

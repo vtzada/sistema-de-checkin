@@ -1,14 +1,17 @@
 # 🎟️ Check-in API
 
-Backend de um sistema de gestão de eventos e check-in, com fluxo completo de convite, confirmação de presença por e-mail e validação de entrada via QR Code. Desenvolvido em Java com Spring Boot, aplicando autenticação/autorização robusta (JWT + RBAC + controle por ownership) e boas práticas de arquitetura em camadas.
+Backend de um sistema de gestão de eventos com **dois fluxos de emissão de ingresso**: convite (patrocinador cadastra convidado, que confirma presença por e-mail) e **venda direta ao público** (cliente compra ingresso via Mercado Pago). Ambos convergem para o mesmo modelo de check-in via QR Code na portaria. Desenvolvido em Java com Spring Boot, aplicando autenticação/autorização robusta (JWT + RBAC + controle por ownership) e boas práticas de arquitetura em camadas.
 
-> Projeto de portfólio focado em modelagem de domínio, regras de negócio e segurança em uma API REST real.
+> Projeto de portfólio focado em modelagem de domínio, regras de negócio e segurança em uma API REST real — incluindo integração com um gateway de pagamento de verdade.
 
 ## 📋 Sobre o projeto
 
-O sistema permite que **produtores de evento** cadastrem eventos, definam pacotes de patrocínio (com limites de convidados VIP, jogadores e convidados comuns) e associem patrocinadores a esses pacotes. Cada patrocinador cadastra seus convidados, que recebem um e-mail de confirmação de presença. Ao confirmar, o convidado recebe automaticamente um **ingresso com QR Code** por e-mail, que é validado na portaria no momento do check-in.
+O sistema tem dois caminhos até o ingresso com QR Code:
 
-**Fluxo principal:**
+- **Convite**: produtores cadastram eventos, definem pacotes de patrocínio (com limites de convidados VIP, jogadores e convidados comuns) e associam patrocinadores a esses pacotes. Cada patrocinador cadastra seus convidados, que recebem um e-mail de confirmação de presença; ao confirmar, o convidado recebe o ingresso automaticamente.
+- **Venda**: o produtor estrutura a venda do evento em **tipos de ingresso** (ex.: Pista, VIP, Open Bar), cada um com um ou mais **lotes** (preço, quantidade, janela de vendas). O cliente compra pelo checkout do Mercado Pago; o ingresso só é emitido depois que o pagamento é confirmado.
+
+**Fluxo de convite:**
 
 ```mermaid
 flowchart LR
@@ -21,6 +24,19 @@ flowchart LR
     G --> H[Check-in na portaria<br/>via leitura do QR Code]
 ```
 
+**Fluxo de venda:**
+
+```mermaid
+flowchart LR
+    A[Produtor cria Tipo de Ingresso] --> B[Produtor cria Lote<br/>preço, qtd, janela de vendas]
+    B --> C[Cliente monta Pedido<br/>estoque reservado na hora]
+    C --> D[Checkout Mercado Pago]
+    D --> E{Pagamento<br/>confirmado?}
+    E -- webhook validado --> F[Ingresso + QR Code gerado<br/>e enviado por e-mail]
+    E -- expira em 15min --> G[Pedido cancelado<br/>estoque liberado]
+    F --> H[Check-in na portaria<br/>via leitura do QR Code]
+```
+
 ## 💡 De onde veio a ideia
 
 A inspiração para esse projeto surgiu de uma experiência que tive como staff em um evento. Na ocasião, a entrada dos convidados era controlada por meio de uma planilha, o que acabava gerando filas, atrasos e algumas confusões durante o credenciamento. Além disso, também havia dificuldade para saber exatamente quem havia comparecido ao evento e obter informações como o total de participantes presentes. Pensando nisso, decidi desenvolver uma solução para tornar esse processo mais rápido, organizado e confiável — daí a API de check-in via QR Code.
@@ -29,31 +45,55 @@ O detalhe do `TipoConvidado` veio de outro evento do qual participei, um network
 
 ## ✅ Funcionalidades
 
-- **Gestão de eventos**: CRUD de eventos, com controle de propriedade (apenas o produtor dono ou um admin pode editar/excluir)
-- **Pacotes de patrocínio**: definição de limites de vagas por tipo de convidado (VIP, jogador, convidado comum)
-- **Patrocinadores e convidados**: cadastro de patrocinadores por evento e convidados por patrocinador, com validação automática de limite de vagas do pacote
-- **Confirmação de presença por e-mail**: link único de confirmação (token) enviado ao convidado
-- **Emissão de ingresso com QR Code**: geração automática (ZXing) após confirmação, com envio por e-mail (template Thymeleaf)
-- **Check-in por QR Code**: validação do código na portaria, com transição de status do ingresso (`VALIDO` → `UTILIZADO`)
-- **Autenticação JWT** com registro/login de usuários
-- **Autorização em duas camadas**:
+**Eventos**
+- CRUD de eventos, com controle de propriedade (apenas o produtor dono ou um admin pode editar/excluir)
+- Categoria do evento (`CategoriaEvento`, 16 categorias) e banner, com busca por texto e filtro por categoria (`/evento?busca=&categoria=`)
+- Listagem de eventos em alta (`/evento/em-alta`)
+
+**Convite (fluxo original)**
+- Pacotes de patrocínio: definição de limites de vagas por tipo de convidado (VIP, jogador, convidado comum)
+- Patrocinadores e convidados: cadastro de patrocinadores por evento e convidados por patrocinador, com validação automática de limite de vagas do pacote
+- Confirmação de presença por e-mail: link único de confirmação (token) enviado ao convidado
+
+**Venda de ingressos**
+- Tipos de ingresso por evento (ex.: Pista, VIP, Open Bar), cada um com um ou mais lotes
+- Lotes com preço, quantidade, janela de vendas (data início/fim) e **virada automática** para o próximo lote quando o atual esgota ou expira — o cliente não escolhe o lote, o sistema resolve qual está disponível
+- Reserva de estoque atômica na criação do pedido (`UPDATE` condicional), evitando overselling em concorrência
+- Checkout via **Mercado Pago** (Orders API), com pedido aceitando compra como usuário logado ou como convidado
+- **Webhook do Mercado Pago validado por assinatura (`x-signature`) e reconfirmado direto na API do MP** antes de liberar o ingresso — não confia cegamente no corpo da notificação
+- Expiração automática de pedidos pendentes (15 min) via scheduler, com liberação do estoque reservado
+
+**Ingresso e check-in**
+- Emissão de ingresso com QR Code: geração automática (ZXing) após confirmação de presença ou pagamento confirmado, com envio por e-mail (template Thymeleaf)
+- Check-in por QR Code: validação do código na portaria, com transição de status do ingresso (`VALIDO` → `UTILIZADO`)
+
+**Segurança e infraestrutura**
+- Autenticação JWT com registro/login de usuários
+- Autorização em duas camadas:
   - **RBAC** por papel (`ADMIN`, `PRODUTOR`, `PORTARIA`, `CLIENTE`)
-  - **OBAC** (ownership-based) — um produtor só gerencia os próprios eventos, pacotes, patrocinadores e ingressos
-- **Sanitização de HTML** (OWASP Java HTML Sanitizer) na descrição do evento, prevenindo XSS
-- **Documentação interativa** via Swagger/OpenAPI
-- **Migrations versionadas** com Flyway (6 migrations aplicadas)
-- **Tratamento de exceções centralizado** (`ResourceNotFoundException`, `ResourceAlreadyExistsException`, `BusinessException`)
+  - **OBAC** (ownership-based) — um produtor só gerencia os próprios eventos, pacotes, patrocinadores, tipos de ingresso, lotes e ingressos
+- Sanitização de HTML (OWASP Java HTML Sanitizer) na descrição do evento, prevenindo XSS
+- Documentação interativa via Swagger/OpenAPI
+- Migrations versionadas com Flyway (8 migrations aplicadas)
+- Tratamento de exceções centralizado (`ResourceNotFoundException`, `ResourceAlreadyExistsException`, `BusinessException`)
+- Testes unitários e de integração para o fluxo de pedido (`PedidoService`, `PedidoController`)
 
 ## 🧱 Modelo de domínio
 
 ```mermaid
 erDiagram
     USUARIO ||--o{ EVENTO : "produz"
+    USUARIO ||--o{ PEDIDO : "faz (opcional)"
     EVENTO ||--o{ PATROCINADOR : possui
     EVENTO ||--o{ PACOTE : possui
+    EVENTO ||--o{ TIPO_INGRESSO : possui
     PACOTE ||--o{ PATROCINADOR : "limita"
     PATROCINADOR ||--o{ CONVIDADO : cadastra
     CONVIDADO ||--o| INGRESSO : gera
+    TIPO_INGRESSO ||--o{ LOTE : possui
+    LOTE ||--o{ ITEM_PEDIDO : "vendido em"
+    PEDIDO ||--o{ ITEM_PEDIDO : contem
+    ITEM_PEDIDO ||--o| INGRESSO : gera
 
     USUARIO {
         Long id
@@ -66,6 +106,8 @@ erDiagram
         string nome
         datetime data
         string local
+        enum categoria
+        string bannerUrl
         boolean ativo
     }
     PACOTE {
@@ -85,10 +127,37 @@ erDiagram
         enum tipoConvidado
         enum statusConfirmacao
     }
+    TIPO_INGRESSO {
+        Long id
+        string nome
+        string descricao
+    }
+    LOTE {
+        Long id
+        int numeroOrdem
+        decimal preco
+        int quantidadeDisponivel
+        datetime dataInicio
+        datetime dataFim
+    }
+    PEDIDO {
+        Long id
+        string nomeComprador
+        string emailComprador
+        decimal valorTotal
+        enum statusPedido
+        string gatewayReferencia
+        datetime dataExpiracao
+    }
+    ITEM_PEDIDO {
+        Long id
+        decimal precoUnitario
+    }
     INGRESSO {
         Long id
         uuid codigoQR
         enum status
+        enum origem
     }
 ```
 
@@ -98,11 +167,13 @@ erDiagram
 |---|---|
 | Linguagem / Framework | Java 21, Spring Boot |
 | Persistência | Spring Data JPA, PostgreSQL, Flyway |
+| Pagamento | SDK Java do Mercado Pago (Orders API + webhook) |
 | Segurança | Spring Security, JWT (java-jwt), BCrypt |
 | Documentação | springdoc-openapi (Swagger UI) |
 | E-mail | Spring Mail, Thymeleaf (templates de e-mail) |
 | QR Code | ZXing (Google) |
 | Segurança de conteúdo | OWASP Java HTML Sanitizer |
+| Testes | JUnit 5, Mockito |
 | Utilitários | Lombok |
 | Build | Maven |
 
@@ -113,11 +184,11 @@ A autorização combina **papel do usuário** com **posse do recurso**, usando `
 | Papel | Permissões |
 |---|---|
 | `ADMIN` | Acesso total a todos os eventos e recursos |
-| `PRODUTOR` | Cria e gerencia apenas os próprios eventos, pacotes, patrocinadores e ingressos |
+| `PRODUTOR` | Cria e gerencia apenas os próprios eventos, pacotes, patrocinadores, tipos de ingresso, lotes e ingressos |
 | `PORTARIA` | Realiza check-in de qualquer ingresso via QR Code |
-| `CLIENTE` | Acesso básico autenticado |
+| `CLIENTE` | Compra ingressos e acompanha os próprios pedidos |
 
-Rotas públicas: listagem/detalhe de eventos, listagem de patrocinadores de um evento, confirmação de presença via token e documentação Swagger. As demais exigem token JWT válido.
+Rotas públicas: listagem/detalhe de eventos, listagem de patrocinadores/tipos de ingresso/lotes disponíveis de um evento, criação de pedido, webhook do Mercado Pago, confirmação de presença via token e documentação Swagger. As demais exigem token JWT válido.
 
 ## 📡 Principais endpoints
 
@@ -127,6 +198,8 @@ Rotas públicas: listagem/detalhe de eventos, listagem de patrocinadores de um e
 | `POST` | `/auth/login` | Público |
 | `POST` | `/evento` | `PRODUTOR` / `ADMIN` |
 | `GET` | `/evento`, `/evento/{id}` | Público |
+| `GET` | `/evento?busca=&categoria=` | Público |
+| `GET` | `/evento/em-alta` | Público |
 | `PUT` / `DELETE` | `/evento/{id}` | Dono do evento / `ADMIN` |
 | `GET` | `/evento/meus-eventos` | Autenticado |
 | `POST` | `/evento/{eventoId}/pacote` | Dono do evento / `ADMIN` |
@@ -137,6 +210,14 @@ Rotas públicas: listagem/detalhe de eventos, listagem de patrocinadores de um e
 | `POST` | `/patrocinador/{patrocinadorId}/convidado` | Dono do evento / `ADMIN` |
 | `GET` | `/patrocinador/{patrocinadorId}/convidados` | Dono do evento / `ADMIN` |
 | `GET` | `/patrocinador/confirmar?token=` | Público |
+| `POST` | `/evento/{eventoId}/tipo-ingresso` | Dono do evento / `ADMIN` |
+| `GET` | `/evento/{eventoId}/tipos-ingresso`, `/tipo-ingresso/{id}` | Público / dono do evento |
+| `POST` | `/tipo-ingresso/{tipoIngressoId}/lote` | Dono do evento / `ADMIN` |
+| `GET` | `/tipo-ingresso/{tipoIngressoId}/lotes`, `/lote/{id}` | Público / dono do evento |
+| `GET` | `/evento/{eventoId}/lotes-disponiveis` | Público |
+| `POST` | `/pedido` | Público (logado ou convidado) |
+| `GET` | `/pedido/{id}` | `PRODUTOR` |
+| `POST` | `/webhook/mercadopago/notificacoes` | Público (validado por assinatura) |
 | `GET` | `/evento/ingressos` | `ADMIN` |
 | `POST` | `/evento/ingressos/checkin` | `PORTARIA` / `ADMIN` / dono do evento |
 
@@ -165,7 +246,17 @@ api:
   security:
     token:
       secret: ${JWT_SECRET}
+mercadopago:
+  access-token: ${MERCADOPAGO_ACCESS_TOKEN}
+  webhook-secret: ${MERCADOPAGO_WEBHOOK_SECRET}
+  notification-url: ${MERCADOPAGO_NOTIFICATION_URL}
+  frontend:
+    success-url: ${MERCADOPAGO_SUCCESS_URL}
+    failure-url: ${MERCADOPAGO_FAILURE_URL}
+    pending-url: ${MERCADOPAGO_PENDING_URL}
 ```
+
+> As credenciais do Mercado Pago acima são as do ambiente de testes (sandbox) da conta de desenvolvedor. `notification-url` precisa ser uma URL pública (ex.: túnel via ngrok) para o webhook chegar em ambiente local.
 
 ### Executando
 
@@ -179,13 +270,6 @@ cd sistema-de-checkin
 ```
 
 A API sobe em `http://localhost:8080`. As migrations do Flyway rodam automaticamente na inicialização.
-
-## 🗺️ Possíveis evoluções
-
-- Testes automatizados (unitários e de integração)
-- Paginação nas listagens
-- Deploy containerizado (Docker)
-- Refresh token / expiração e renovação de sessão
 
 ## 👤 Autor
 
